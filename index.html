@@ -3,9 +3,389 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Recipe Book</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+    </style>
 </head>
-<body>
-    
+<body class="bg-gray-100 min-h-screen flex flex-col p-4">
+
+    <!-- Confirmation Modal (hidden by default) -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-sm text-center">
+            <p id="modal-message" class="text-lg font-medium mb-4 text-gray-800"></p>
+            <div class="flex justify-center space-x-4">
+                <button id="modal-ok-btn" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="container mx-auto max-w-6xl">
+        <!-- Navigation Bar -->
+        <nav class="flex justify-between items-center py-4">
+            <a href="#" id="nav-home" class="text-2xl font-bold text-gray-800">Recipe Book</a>
+            <div class="flex items-center space-x-4">
+                <p id="user-id-display" class="text-sm text-gray-500 hidden sm:block"></p>
+                <button id="nav-favorites" class="bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-200 transition-colors duration-200">Favorites</button>
+                <button id="nav-submit" class="bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-200 transition-colors duration-200">Submit Recipe</button>
+            </div>
+        </nav>
+
+        <!-- Page Sections -->
+        <main class="mt-8">
+
+            <!-- 1. Landing Page -->
+            <section id="landing-page" class="page-section active">
+                <div class="bg-orange-500 rounded-3xl p-8 sm:p-12 flex flex-col-reverse md:flex-row items-center justify-between shadow-lg">
+                    <div class="md:w-1/2 text-center md:text-left text-white mt-8 md:mt-0">
+                        <h1 class="text-5xl font-extrabold leading-tight mb-4">Recipe Book</h1>
+                        <p class="text-xl font-medium mb-6">Find delicious recipes to make at home.</p>
+                        <button id="landing-search-btn" class="bg-white text-orange-500 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200">Search Recipes</button>
+                    </div>
+                    <div class="md:w-1/2 flex justify-center md:justify-end">
+                        <img src="https://placehold.co/400x400/fff/333?text=Delicious+Food" alt="Delicious Food" class="rounded-full w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-cover shadow-2xl">
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Recipe Search Page -->
+            <section id="search-page" class="page-section">
+                <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Recipe Search</h1>
+                <div class="flex justify-center mb-8">
+                    <div class="flex items-center w-full max-w-2xl bg-white rounded-full shadow-md overflow-hidden">
+                        <input type="text" id="search-input" placeholder="Search recipes" class="w-full p-4 border-none focus:outline-none">
+                        <button id="search-button" class="p-4 text-gray-500 hover:text-gray-800 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Recipes will be injected here -->
+                </div>
+                <div id="search-message" class="text-center mt-8 text-gray-500 hidden">
+                    <p id="search-message-text" class="text-lg">No recipes found.</p>
+                </div>
+            </section>
+
+            <!-- 3. Submit Recipe Form -->
+            <section id="submit-page" class="page-section">
+                <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-lg max-w-2xl mx-auto">
+                    <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Submit Your Recipe</h1>
+                    <form id="submit-form" class="space-y-6">
+                        <div>
+                            <label for="recipe-name" class="block text-gray-700 font-medium mb-2">Recipe name</label>
+                            <input type="text" id="recipe-name" name="recipe-name" required
+                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="image-url" class="block text-gray-700 font-medium mb-2">Image URL</label>
+                            <input type="url" id="image-url" name="image-url" required
+                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        </div>
+                        <div>
+                            <label for="tutorial" class="block text-gray-700 font-medium mb-2">Tutorial</label>
+                            <textarea id="tutorial" name="tutorial" rows="6" required
+                                      class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-orange-500 text-white font-bold py-4 rounded-full shadow-lg hover:bg-orange-600 transition-colors duration-200">
+                            Submit Recipe
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 4. Favorites Page -->
+            <section id="favorites-page" class="page-section">
+                <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Favorites</h1>
+                <div class="flex justify-center mb-8">
+                    <div class="flex items-center w-full max-w-2xl bg-white rounded-full shadow-md overflow-hidden">
+                        <input type="text" id="favorites-search-input" placeholder="Search your favorites" class="w-full p-4 border-none focus:outline-none">
+                        <button id="favorites-search-button" class="p-4 text-gray-500 hover:text-gray-800 transition-colors duration-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div id="favorites-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <!-- Favorite recipes will be injected here -->
+                </div>
+                <div id="favorites-message" class="text-center mt-8 text-gray-500 hidden">
+                    <p id="favorites-message-text" class="text-lg">You have no favorite recipes yet.</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId;
+
+        // Display modal message
+        function showModal(message) {
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('confirmation-modal').classList.remove('hidden');
+        }
+
+        // Hide modal
+        document.getElementById('modal-ok-btn').addEventListener('click', () => {
+            document.getElementById('confirmation-modal').classList.add('hidden');
+        });
+
+        // Function to navigate between pages
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page-section').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        // Card rendering function
+        function renderCards(containerId, recipes, showFavoriteIcon = true) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear existing cards
+            if (recipes.length === 0) {
+                const messageContainer = document.getElementById(containerId === 'search-results' ? 'search-message' : 'favorites-message');
+                messageContainer.classList.remove('hidden');
+            } else {
+                const messageContainer = document.getElementById(containerId === 'search-results' ? 'search-message' : 'favorites-message');
+                messageContainer.classList.add('hidden');
+            }
+
+            recipes.forEach(recipe => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md overflow-hidden flex flex-col transition-transform duration-200 hover:scale-105';
+                
+                const imageUrl = recipe.imageUrl || 'https://placehold.co/400x300/e5e7eb/4b5563?text=No+Image';
+
+                let favoriteIconHtml = '';
+                if (showFavoriteIcon) {
+                    const isFavorite = recipe.isFavorite || false;
+                    favoriteIconHtml = `
+                        <button data-recipe-id="${recipe.id}" data-is-favorite="${isFavorite}" class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg favorite-btn">
+                            <svg class="h-6 w-6 transition-transform duration-200" fill="${isFavorite ? '#ef4444' : 'none'}" stroke="${isFavorite ? 'none' : '#ef4444'}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
+                            </svg>
+                        </button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="${imageUrl}" alt="${recipe.name}" class="w-full h-48 object-cover">
+                        ${favoriteIconHtml}
+                    </div>
+                    <div class="p-4 flex-grow">
+                        <h2 class="text-lg font-semibold text-gray-800">${recipe.name}</h2>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Fetch and display all recipes from Firestore
+        function fetchAllRecipes() {
+            if (!db) {
+                showModal("Database not initialized. Please try again.");
+                return;
+            }
+            const recipesCollection = collection(db, `artifacts/${appId}/public/data/recipes`);
+            onSnapshot(recipesCollection, async (snapshot) => {
+                const recipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                // Fetch user's favorites to cross-reference
+                const favorites = await getFavoriteRecipes();
+                const recipesWithFavorites = recipes.map(recipe => ({
+                    ...recipe,
+                    isFavorite: favorites.some(fav => fav.id === recipe.id)
+                }));
+                renderCards('search-results', recipesWithFavorites);
+            });
+        }
+        
+        // Fetch and display user's favorite recipes
+        function fetchFavoriteRecipes() {
+            if (!db || !userId) {
+                document.getElementById('favorites-message-text').textContent = 'Please log in to see your favorites.';
+                renderCards('favorites-results', [], false); // Hide favorite icon for non-logged-in users
+                return;
+            }
+            const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
+            onSnapshot(favoritesCollection, (snapshot) => {
+                const favoriteRecipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isFavorite: true }));
+                renderCards('favorites-results', favoriteRecipes, false); // No favorite icon on favorites page
+            });
+        }
+
+        // Helper to get favorite recipes without onSnapshot
+        async function getFavoriteRecipes() {
+            if (!db || !userId) return [];
+            const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
+            const querySnapshot = await getDocs(favoritesCollection);
+            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        }
+        
+        // Handle form submission for new recipes
+        document.getElementById('submit-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!db) {
+                showModal("Database not initialized. Please try again.");
+                return;
+            }
+            const name = document.getElementById('recipe-name').value;
+            const imageUrl = document.getElementById('image-url').value;
+            const tutorial = document.getElementById('tutorial').value;
+
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/public/data/recipes`), {
+                    name,
+                    imageUrl,
+                    tutorial
+                });
+                showModal("Recipe submitted successfully!");
+                document.getElementById('submit-form').reset();
+            } catch (error) {
+                console.error("Error submitting recipe:", error);
+                showModal("Failed to submit recipe. Please try again.");
+            }
+        });
+
+        // Add/remove recipe from favorites
+        document.addEventListener('click', async (e) => {
+            if (e.target.closest('.favorite-btn')) {
+                if (!userId) {
+                    showModal("Please log in to add to favorites!");
+                    return;
+                }
+                const btn = e.target.closest('.favorite-btn');
+                const recipeId = btn.dataset.recipeId;
+                const isFavorite = btn.dataset.isFavorite === 'true';
+
+                const docRef = doc(db, `artifacts/${appId}/users/${userId}/favorites`, recipeId);
+                
+                try {
+                    if (isFavorite) {
+                        await deleteDoc(docRef);
+                    } else {
+                        const recipeDoc = await getDoc(doc(db, `artifacts/${appId}/public/data/recipes`, recipeId));
+                        if (recipeDoc.exists()) {
+                            await setDoc(docRef, recipeDoc.data());
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error toggling favorite:", error);
+                    showModal("Failed to update favorites. Please try again.");
+                }
+            }
+        });
+        
+        // --- Event Listeners and Initial Load ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Firebase setup
+            if (!Object.keys(firebaseConfig).length) {
+                showModal("Firebase is not configured. Please provide a valid configuration.");
+                console.error("Firebase is not configured. The firebaseConfig object is empty.");
+                return;
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                setLogLevel('debug');
+            } catch (e) {
+                showModal("Failed to initialize Firebase. Check your project settings.");
+                console.error("Firebase init error:", e);
+            }
+
+            // Authentication
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                } else {
+                    userId = null;
+                }
+            });
+
+            // Initial auth with custom token
+            if (auth && initialAuthToken) {
+                await signInWithCustomToken(auth, initialAuthToken).catch(async (error) => {
+                    console.error("Custom token sign-in failed. Signing in anonymously.", error);
+                    await signInAnonymously(auth);
+                });
+            } else if (auth) {
+                await signInAnonymously(auth);
+            }
+
+            // Page navigation
+            document.getElementById('nav-home').addEventListener('click', () => navigateTo('landing-page'));
+            document.getElementById('landing-search-btn').addEventListener('click', () => {
+                navigateTo('search-page');
+                fetchAllRecipes();
+            });
+            document.getElementById('nav-favorites').addEventListener('click', () => {
+                navigateTo('favorites-page');
+                fetchFavoriteRecipes();
+            });
+            document.getElementById('nav-submit').addEventListener('click', () => navigateTo('submit-page'));
+            document.getElementById('search-button').addEventListener('click', () => {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const recipesCollection = collection(db, `artifacts/${appId}/public/data/recipes`);
+                onSnapshot(recipesCollection, async (snapshot) => {
+                    const allRecipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    const filteredRecipes = allRecipes.filter(recipe => recipe.name.toLowerCase().includes(searchTerm));
+                    const favorites = await getFavoriteRecipes();
+                    const recipesWithFavorites = filteredRecipes.map(recipe => ({
+                        ...recipe,
+                        isFavorite: favorites.some(fav => fav.id === recipe.id)
+                    }));
+                    renderCards('search-results', recipesWithFavorites);
+                });
+            });
+
+            document.getElementById('favorites-search-button').addEventListener('click', () => {
+                const searchTerm = document.getElementById('favorites-search-input').value.toLowerCase();
+                if (!userId) {
+                    showModal("Please log in to search your favorites.");
+                    return;
+                }
+                const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
+                onSnapshot(favoritesCollection, (snapshot) => {
+                    const allFavorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isFavorite: true }));
+                    const filteredFavorites = allFavorites.filter(fav => fav.name.toLowerCase().includes(searchTerm));
+                    renderCards('favorites-results', filteredFavorites, false);
+                });
+            });
+
+            // Initial page load
+            navigateTo('landing-page');
+        });
+    </script>
 </body>
 </html>
