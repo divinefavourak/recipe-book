@@ -3,25 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Book</title>
+    <title>Naija Kitchen - Nigerian Recipe Book</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #e67e22;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #f8f9fa;
+            color: #333;
         }
+        
         .page-section {
             display: none;
+            animation: fadeIn 0.5s ease;
         }
+        
         .page-section.active {
             display: block;
         }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .recipe-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .favorite-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f1f5f9;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .nigerian-pattern {
+            background-color: #e67e22;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f1c40f' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #d35400;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .bg-primary {
+            background-color: var(--primary);
+        }
+        
+        .border-primary {
+            border-color: var(--primary);
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col p-4">
-
-    <!-- Confirmation Modal (hidden by default) -->
+<body class="min-h-screen flex flex-col">
+    <!-- Confirmation Modal -->
     <div id="confirmation-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg p-6 shadow-xl w-full max-w-sm text-center">
             <p id="modal-message" class="text-lg font-medium mb-4 text-gray-800"></p>
@@ -32,77 +128,159 @@
     </div>
 
     <!-- Main App Container -->
-    <div class="container mx-auto max-w-6xl">
+    <div class="container mx-auto max-w-6xl flex-grow p-4">
         <!-- Navigation Bar -->
-        <nav class="flex justify-between items-center py-4">
-            <a href="#" id="nav-home" class="text-2xl font-bold text-gray-800">Recipe Book</a>
-            <div class="flex items-center space-x-4">
+        <nav class="flex justify-between items-center py-4 mb-6">
+            <a href="#" id="nav-home" class="text-2xl font-bold text-gray-800 flex items-center">
+                <img src="images/Pioneer.png" alt="Naija Kitchen Logo" class="w-8 h-8 mr-2 inline-block rounded-full border-2 border-primary">Pioneer's Kitchen
+            </a>
+            <div class="flex items-center space-x-3">
                 <p id="user-id-display" class="text-sm text-gray-500 hidden sm:block"></p>
-                <button id="nav-favorites" class="bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-200 transition-colors duration-200">Favorites</button>
-                <button id="nav-submit" class="bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-200 transition-colors duration-200">Submit Recipe</button>
+                <button id="nav-submit" class="nav-btn bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-50 transition-colors duration-200">
+                    <i class="fas fa-plus mr-1"></i>Submit Recipe
+                </button>
+                <a href="#" id="nav-favorites" class="nav-btn bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-50 transition-colors duration-200">
+                    <i class="fas fa-heart mr-1"></i>Favorites
+                </a>
+                <a href="#" id="nav-search" class="nav-btn bg-white text-gray-800 font-semibold py-2 px-4 rounded-xl shadow-sm hover:bg-gray-50 transition-colors duration-200">
+                    <i class="fas fa-search mr-1"></i>Search
+                </a>
             </div>
         </nav>
 
         <!-- Page Sections -->
-        <main class="mt-8">
-
+        <main class="mt-4">
             <!-- 1. Landing Page -->
             <section id="landing-page" class="page-section active">
-                <div class="bg-orange-500 rounded-3xl p-8 sm:p-12 flex flex-col-reverse md:flex-row items-center justify-between shadow-lg">
+                <div class="nigerian-pattern rounded-3xl p-8 sm:p-12 flex flex-col-reverse md:flex-row items-center justify-between shadow-lg">
                     <div class="md:w-1/2 text-center md:text-left text-white mt-8 md:mt-0">
-                        <h1 class="text-5xl font-extrabold leading-tight mb-4">Recipe Book</h1>
-                        <p class="text-xl font-medium mb-6">Find delicious recipes to make at home.</p>
-                        <button id="landing-search-btn" class="bg-white text-orange-500 font-bold py-3 px-8 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200">Search Recipes</button>
+                        <h1 class="text-4xl sm:text-5xl font-extrabold leading-tight mb-4">Taste of Nigeria</h1>
+                        <p class="text-lg sm:text-xl font-medium mb-6">Discover authentic Nigerian recipes from Jollof Rice to Egusi Soup.</p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <a href="#" id="landing-search-btn" class="bg-white text-primary font-bold py-3 px-6 rounded-full shadow-lg hover:bg-gray-100 transition-colors duration-200 inline-flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i>Search Recipes
+                            </a>
+                            <button id="landing-submit-btn" class="bg-transparent border-2 border-white text-white font-bold py-3 px-6 rounded-full shadow-lg hover:bg-white hover:text-primary transition-colors duration-200 inline-flex items-center justify-center">
+                                <i class="fas fa-plus mr-2"></i>Submit Recipe
+                            </button>
+                        </div>
                     </div>
                     <div class="md:w-1/2 flex justify-center md:justify-end">
-                        <img src="https://placehold.co/400x400/fff/333?text=Delicious+Food" alt="Delicious Food" class="rounded-full w-48 h-48 sm:w-64 sm:h-64 md:w-80 md:h-80 object-cover shadow-2xl">
+                        <img src="images/Amala-and-Ewedu.jpeg" alt="Nigerian Food" class="rounded-2xl w-64 h-64 sm:w-80 sm:h-80 object-cover shadow-2xl border-4 border-white">
+                    </div>
+                </div>
+                
+                <!-- Popular Nigerian Dishes -->
+                <h2 class="text-3xl font-bold text-center my-12 text-primary">Popular Nigerian Dishes</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-utensils text-2xl text-secondary"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Jollof Rice</h3>
+                        <p class="text-gray-600">West Africa's famous one-pot rice dish cooked in a flavorful tomato sauce.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-drumstick-bite text-2xl text-primary"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Suya</h3>
+                        <p class="text-gray-600">Spicy skewered meat, a popular Nigerian street food.</p>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-2xl shadow-md text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-mortar-pestle text-2xl text-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Egusi Soup</h3>
+                        <p class="text-gray-600">A rich, hearty soup made with melon seeds and leafy vegetables.</p>
                     </div>
                 </div>
             </section>
 
             <!-- 2. Recipe Search Page -->
             <section id="search-page" class="page-section">
-                <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Recipe Search</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-primary">Find Nigerian Recipes</h1>
                 <div class="flex justify-center mb-8">
                     <div class="flex items-center w-full max-w-2xl bg-white rounded-full shadow-md overflow-hidden">
-                        <input type="text" id="search-input" placeholder="Search recipes" class="w-full p-4 border-none focus:outline-none">
-                        <button id="search-button" class="p-4 text-gray-500 hover:text-gray-800 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                        <input type="text" id="search-input" placeholder="Search Nigerian recipes..." class="w-full p-4 border-none focus:outline-none focus:ring-0">
+                        <button id="search-button" class="p-4 text-gray-500 hover:text-primary transition-colors duration-200">
+                            <i class="fas fa-search text-lg"></i>
                         </button>
                     </div>
                 </div>
+                
+                <div id="loading-spinner-search" class="loading-spinner"></div>
+                
                 <div id="search-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Recipes will be injected here -->
+                    <!-- Default Nigerian recipes -->
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full">
+                        <div class="relative">
+                            <img src="images/jollof.jpg" alt="Jollof Rice" class="w-full h-48 object-cover">
+                            <button class="favorite-btn absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
+                                <i class="fas fa-heart text-gray-300"></i>
+                            </button>
+                        </div>
+                        <div class="p-4 flex-grow">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">Jollof Rice</h2>
+                            <p class="text-gray-600 text-sm mb-4">West Africa's famous one-pot rice dish cooked in a flavorful tomato sauce.</p>
+                        </div>
+                        <div class="px-4 pb-4 mt-auto">
+                            <button class="view-recipe-btn w-full bg-primary text-white py-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
+                                View Recipe
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="recipe-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full">
+                        <div class="relative">
+                            <img src="images/egusi.jpg" alt="Pounded Yam and Egusi" class="w-full h-48 object-cover">
+                            <button class="favorite-btn absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
+                                <i class="fas fa-heart text-gray-300"></i>
+                            </button>
+                        </div>
+                        <div class="p-4 flex-grow">
+                            <h2 class="text-lg font-semibold text-gray-800 mb-2">Pounded Yam & Egusi</h2>
+                            <p class="text-gray-600 text-sm mb-4">A classic Nigerian combination of smooth pounded yam and rich egusi soup.</p>
+                        </div>
+                        <div class="px-4 pb-4 mt-auto">
+                            <button class="view-recipe-btn w-full bg-primary text-white py-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
+                                View Recipe
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 <div id="search-message" class="text-center mt-8 text-gray-500 hidden">
-                    <p id="search-message-text" class="text-lg">No recipes found.</p>
+                    <p id="search-message-text" class="text-lg">No recipes found. Try a different search term.</p>
                 </div>
             </section>
 
             <!-- 3. Submit Recipe Form -->
             <section id="submit-page" class="page-section">
-                <div class="bg-white rounded-3xl p-8 sm:p-12 shadow-lg max-w-2xl mx-auto">
-                    <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Submit Your Recipe</h1>
+                <div class="bg-white rounded-3xl p-6 sm:p-10 shadow-lg max-w-2xl mx-auto">
+                    <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-primary">Share Your Nigerian Recipe</h1>
                     <form id="submit-form" class="space-y-6">
                         <div>
-                            <label for="recipe-name" class="block text-gray-700 font-medium mb-2">Recipe name</label>
+                            <label for="recipe-name" class="block text-gray-700 font-medium mb-2">Recipe Name</label>
                             <input type="text" id="recipe-name" name="recipe-name" required
-                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="e.g., Jollof Rice">
                         </div>
                         <div>
                             <label for="image-url" class="block text-gray-700 font-medium mb-2">Image URL</label>
                             <input type="url" id="image-url" name="image-url" required
-                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500">
+                                   class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                   placeholder="https://example.com/image.jpg">
                         </div>
                         <div>
-                            <label for="tutorial" class="block text-gray-700 font-medium mb-2">Tutorial</label>
+                            <label for="tutorial" class="block text-gray-700 font-medium mb-2">Cooking Instructions</label>
                             <textarea id="tutorial" name="tutorial" rows="6" required
-                                      class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"></textarea>
+                                      class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                      placeholder="Step-by-step instructions for preparing this Nigerian dish..."></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-orange-500 text-white font-bold py-4 rounded-full shadow-lg hover:bg-orange-600 transition-colors duration-200">
-                            Submit Recipe
+                        <button type="submit" class="w-full bg-primary text-white font-bold py-4 rounded-full shadow-lg hover:bg-orange-700 transition-colors duration-200 flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2"></i>Share Recipe
                         </button>
                     </form>
                 </div>
@@ -110,42 +288,71 @@
 
             <!-- 4. Favorites Page -->
             <section id="favorites-page" class="page-section">
-                <h1 class="text-4xl font-bold text-center mb-6 text-gray-800">Favorites</h1>
+                <h1 class="text-3xl sm:text-4xl font-bold text-center mb-6 text-primary">Your Favorite Nigerian Recipes</h1>
                 <div class="flex justify-center mb-8">
                     <div class="flex items-center w-full max-w-2xl bg-white rounded-full shadow-md overflow-hidden">
-                        <input type="text" id="favorites-search-input" placeholder="Search your favorites" class="w-full p-4 border-none focus:outline-none">
-                        <button id="favorites-search-button" class="p-4 text-gray-500 hover:text-gray-800 transition-colors duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                        <input type="text" id="favorites-search-input" placeholder="Search your favorites..." class="w-full p-4 border-none focus:outline-none focus:ring-0">
+                        <button id="favorites-search-button" class="p-4 text-gray-500 hover:text-primary transition-colors duration-200">
+                            <i class="fas fa-search text-lg"></i>
                         </button>
                     </div>
                 </div>
+                
+                <div id="loading-spinner-favorites" class="loading-spinner"></div>
+                
                 <div id="favorites-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     <!-- Favorite recipes will be injected here -->
                 </div>
                 <div id="favorites-message" class="text-center mt-8 text-gray-500 hidden">
-                    <p id="favorites-message-text" class="text-lg">You have no favorite recipes yet.</p>
+                    <p id="favorites-message-text" class="text-lg">You have no favorite recipes yet. Start adding some!</p>
                 </div>
             </section>
-
         </main>
     </div>
 
+    <!-- Footer -->
+    <footer class="mt-12 py-8 text-center text-white bg-dark">
+        <div class="container mx-auto">
+            <h3 class="text-2xl font-bold mb-4">Naija Kitchen</h3>
+            <p class="mb-4">Discover the rich flavors of Nigerian cuisine</p>
+            <div class="flex justify-center space-x-6 mb-4">
+                <a href="#" class="text-white hover:text-primary transition-colors duration-200"><i class="fab fa-facebook-f text-lg"></i></a>
+                <a href="#" class="text-white hover:text-primary transition-colors duration-200"><i class="fab fa-twitter text-lg"></i></a>
+                <a href="#" class="text-white hover:text-primary transition-colors duration-200"><i class="fab fa-instagram text-lg"></i></a>
+                <a href="#" class="text-white hover:text-primary transition-colors duration-200"><i class="fab fa-pinterest text-lg"></i></a>
+            </div>
+            <p>© 2023 Naija Kitchen. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Firebase Configuration -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, deleteDoc, onSnapshot, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, addDoc, setDoc, deleteDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-        // Global variables provided by the environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9vgG--V3PCt0CdgQWjy_myI2mRpNwrt4",
+            authDomain: "food-recipe-3aa3d.firebaseapp.com",
+            projectId: "food-recipe-3aa3d",
+            storageBucket: "food-recipe-3aa3d.firebasestorage.app",
+            messagingSenderId: "917057458097",
+            appId: "1:917057458097:web:0339f12b575a85309a3790",
+            measurementId: "G-ZZS7C705LC"
+        };
 
-        let db;
-        let auth;
-        let userId;
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // App constants
+        const appId = "naija-kitchen-app";
+        let userId = null;
 
         // Display modal message
         function showModal(message) {
@@ -164,12 +371,24 @@
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        // Show loading spinner
+        function showLoading(containerId) {
+            document.getElementById(`loading-spinner-${containerId}`).style.display = 'block';
+        }
+
+        // Hide loading spinner
+        function hideLoading(containerId) {
+            document.getElementById(`loading-spinner-${containerId}`).style.display = 'none';
         }
 
         // Card rendering function
         function renderCards(containerId, recipes, showFavoriteIcon = true) {
             const container = document.getElementById(containerId);
             container.innerHTML = ''; // Clear existing cards
+            
             if (recipes.length === 0) {
                 const messageContainer = document.getElementById(containerId === 'search-results' ? 'search-message' : 'favorites-message');
                 messageContainer.classList.remove('hidden');
@@ -180,18 +399,16 @@
 
             recipes.forEach(recipe => {
                 const card = document.createElement('div');
-                card.className = 'bg-white rounded-xl shadow-md overflow-hidden flex flex-col transition-transform duration-200 hover:scale-105';
+                card.className = 'recipe-card bg-white rounded-xl shadow-md overflow-hidden flex flex-col h-full';
                 
-                const imageUrl = recipe.imageUrl || 'https://placehold.co/400x300/e5e7eb/4b5563?text=No+Image';
+                const imageUrl = recipe.imageUrl || 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80';
 
                 let favoriteIconHtml = '';
                 if (showFavoriteIcon) {
                     const isFavorite = recipe.isFavorite || false;
                     favoriteIconHtml = `
-                        <button data-recipe-id="${recipe.id}" data-is-favorite="${isFavorite}" class="absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg favorite-btn">
-                            <svg class="h-6 w-6 transition-transform duration-200" fill="${isFavorite ? '#ef4444' : 'none'}" stroke="${isFavorite ? 'none' : '#ef4444'}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 016.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z"></path>
-                            </svg>
+                        <button data-recipe-id="${recipe.id}" data-is-favorite="${isFavorite}" class="favorite-btn absolute top-4 right-4 bg-white p-2 rounded-full shadow-lg">
+                            <i class="fas fa-heart ${isFavorite ? 'text-red-500' : 'text-gray-300'}"></i>
                         </button>
                     `;
                 }
@@ -202,71 +419,156 @@
                         ${favoriteIconHtml}
                     </div>
                     <div class="p-4 flex-grow">
-                        <h2 class="text-lg font-semibold text-gray-800">${recipe.name}</h2>
+                        <h2 class="text-lg font-semibold text-gray-800 mb-2">${recipe.name}</h2>
+                        <p class="text-gray-600 text-sm mb-4">${recipe.tutorial ? recipe.tutorial.substring(0, 80) + '...' : 'No description available'}</p>
+                    </div>
+                    <div class="px-4 pb-4 mt-auto">
+                        <button class="view-recipe-btn w-full bg-primary text-white py-2 rounded-lg hover:bg-orange-700 transition-colors duration-200">
+                            View Recipe
+                        </button>
                     </div>
                 `;
                 container.appendChild(card);
             });
+            
+            // Hide loading spinner after rendering
+            hideLoading(containerId === 'search-results' ? 'search' : 'favorites');
         }
 
         // Fetch and display all recipes from Firestore
-        function fetchAllRecipes() {
-            if (!db) {
-                showModal("Database not initialized. Please try again.");
-                return;
+        async function fetchAllRecipes() {
+            showLoading('search');
+            
+            try {
+                const recipesCollection = collection(db, 'recipes');
+                const querySnapshot = await getDocs(recipesCollection);
+                
+                const recipes = [];
+                querySnapshot.forEach((doc) => {
+                    recipes.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // If no recipes in DB, show sample Nigerian recipes
+                if (recipes.length === 0) {
+                    const sampleRecipes = [
+                        {
+                            id: '1',
+                            name: 'Jollof Rice',
+                            imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                            tutorial: 'A West African one-pot rice dish cooked in a flavorful tomato sauce. Often served with chicken or fish.'
+                        },
+                        {
+                            id: '2',
+                            name: 'Pounded Yam and Egusi Soup',
+                            imageUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                            tutorial: 'A classic Nigerian combination of smooth pounded yam and rich egusi soup made with melon seeds.'
+                        }
+                    ];
+                    
+                    // Add sample recipes to Firestore if empty
+                    for (const recipe of sampleRecipes) {
+                        await addDoc(recipesCollection, {
+                            name: recipe.name,
+                            imageUrl: recipe.imageUrl,
+                            tutorial: recipe.tutorial,
+                            createdAt: new Date()
+                        });
+                    }
+                    
+                    // Use sample recipes for display
+                    renderCards('search-results', sampleRecipes);
+                } else {
+                    // Use recipes from Firestore
+                    renderCards('search-results', recipes);
+                }
+            } catch (error) {
+                console.error("Error fetching recipes:", error);
+                showModal("Failed to load recipes. Please try again.");
+                
+                // Show sample recipes as fallback
+                const sampleRecipes = [
+                    {
+                        id: '1',
+                        name: 'Jollof Rice',
+                        imageUrl: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                        tutorial: 'A West African one-pot rice dish cooked in a flavorful tomato sauce. Often served with chicken or fish.'
+                    },
+                    {
+                        id: '2',
+                        name: 'Pounded Yam and Egusi Soup',
+                        imageUrl: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80',
+                        tutorial: 'A classic Nigerian combination of smooth pounded yam and rich egusi soup made with melon seeds.'
+                    }
+                ];
+                
+                renderCards('search-results', sampleRecipes);
             }
-            const recipesCollection = collection(db, `artifacts/${appId}/public/data/recipes`);
-            onSnapshot(recipesCollection, async (snapshot) => {
-                const recipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Fetch user's favorites to cross-reference
-                const favorites = await getFavoriteRecipes();
-                const recipesWithFavorites = recipes.map(recipe => ({
-                    ...recipe,
-                    isFavorite: favorites.some(fav => fav.id === recipe.id)
-                }));
-                renderCards('search-results', recipesWithFavorites);
-            });
         }
         
         // Fetch and display user's favorite recipes
-        function fetchFavoriteRecipes() {
-            if (!db || !userId) {
+        async function fetchFavoriteRecipes() {
+            if (!userId) {
                 document.getElementById('favorites-message-text').textContent = 'Please log in to see your favorites.';
-                renderCards('favorites-results', [], false); // Hide favorite icon for non-logged-in users
+                renderCards('favorites-results', [], false);
                 return;
             }
-            const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
-            onSnapshot(favoritesCollection, (snapshot) => {
-                const favoriteRecipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isFavorite: true }));
-                renderCards('favorites-results', favoriteRecipes, false); // No favorite icon on favorites page
-            });
+            
+            showLoading('favorites');
+            
+            try {
+                const favoritesCollection = collection(db, 'users', userId, 'favorites');
+                const querySnapshot = await getDocs(favoritesCollection);
+                
+                const favoriteRecipes = [];
+                querySnapshot.forEach((doc) => {
+                    favoriteRecipes.push({ id: doc.id, ...doc.data(), isFavorite: true });
+                });
+                
+                renderCards('favorites-results', favoriteRecipes, false);
+            } catch (error) {
+                console.error("Error fetching favorites:", error);
+                showModal("Failed to load favorites. Please try again.");
+                renderCards('favorites-results', [], false);
+            }
         }
 
-        // Helper to get favorite recipes without onSnapshot
+        // Helper to get favorite recipes
         async function getFavoriteRecipes() {
-            if (!db || !userId) return [];
-            const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
-            const querySnapshot = await getDocs(favoritesCollection);
-            return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            if (!userId) return [];
+            
+            try {
+                const favoritesCollection = collection(db, 'users', userId, 'favorites');
+                const querySnapshot = await getDocs(favoritesCollection);
+                
+                const favorites = [];
+                querySnapshot.forEach((doc) => {
+                    favorites.push({ id: doc.id, ...doc.data() });
+                });
+                
+                return favorites;
+            } catch (error) {
+                console.error("Error getting favorites:", error);
+                return [];
+            }
         }
         
         // Handle form submission for new recipes
         document.getElementById('submit-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!db) {
-                showModal("Database not initialized. Please try again.");
-                return;
-            }
+            
             const name = document.getElementById('recipe-name').value;
             const imageUrl = document.getElementById('image-url').value;
             const tutorial = document.getElementById('tutorial').value;
 
             try {
-                await addDoc(collection(db, `artifacts/${appId}/public/data/recipes`), {
+                const recipesCollection = collection(db, 'recipes');
+                await addDoc(recipesCollection, {
                     name,
                     imageUrl,
-                    tutorial
+                    tutorial,
+                    createdAt: new Date()
                 });
+                
                 showModal("Recipe submitted successfully!");
                 document.getElementById('submit-form').reset();
             } catch (error) {
@@ -282,19 +584,28 @@
                     showModal("Please log in to add to favorites!");
                     return;
                 }
+                
                 const btn = e.target.closest('.favorite-btn');
                 const recipeId = btn.dataset.recipeId;
                 const isFavorite = btn.dataset.isFavorite === 'true';
 
-                const docRef = doc(db, `artifacts/${appId}/users/${userId}/favorites`, recipeId);
-                
                 try {
                     if (isFavorite) {
-                        await deleteDoc(docRef);
+                        // Remove from favorites
+                        await deleteDoc(doc(db, 'users', userId, 'favorites', recipeId));
+                        btn.dataset.isFavorite = 'false';
+                        btn.querySelector('i').classList.remove('text-red-500');
+                        btn.querySelector('i').classList.add('text-gray-300');
+                        showModal("Removed from favorites!");
                     } else {
-                        const recipeDoc = await getDoc(doc(db, `artifacts/${appId}/public/data/recipes`, recipeId));
+                        // Add to favorites - first get recipe data
+                        const recipeDoc = await getDoc(doc(db, 'recipes', recipeId));
                         if (recipeDoc.exists()) {
-                            await setDoc(docRef, recipeDoc.data());
+                            await setDoc(doc(db, 'users', userId, 'favorites', recipeId), recipeDoc.data());
+                            btn.dataset.isFavorite = 'true';
+                            btn.querySelector('i').classList.remove('text-gray-300');
+                            btn.querySelector('i').classList.add('text-red-500');
+                            showModal("Added to favorites!");
                         }
                     }
                 } catch (error) {
@@ -306,81 +617,132 @@
         
         // --- Event Listeners and Initial Load ---
         document.addEventListener('DOMContentLoaded', async () => {
-            // Firebase setup
-            if (!Object.keys(firebaseConfig).length) {
-                showModal("Firebase is not configured. Please provide a valid configuration.");
-                console.error("Firebase is not configured. The firebaseConfig object is empty.");
-                return;
-            }
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                setLogLevel('debug');
-            } catch (e) {
-                showModal("Failed to initialize Firebase. Check your project settings.");
-                console.error("Firebase init error:", e);
-            }
-
-            // Authentication
+            // Set up authentication state observer
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     userId = user.uid;
-                    document.getElementById('user-id-display').textContent = `User ID: ${userId}`;
+                    document.getElementById('user-id-display').textContent = `User ID: ${userId.substring(0, 8)}...`;
+                    document.getElementById('user-id-display').classList.remove('hidden');
                 } else {
-                    userId = null;
+                    // Sign in anonymously if no user is signed in
+                    signInAnonymously(auth)
+                        .then(() => {
+                            console.log("Signed in anonymously");
+                        })
+                        .catch((error) => {
+                            console.error("Error signing in anonymously:", error);
+                            showModal("Authentication error. Some features may not work.");
+                        });
                 }
             });
 
-            // Initial auth with custom token
-            if (auth && initialAuthToken) {
-                await signInWithCustomToken(auth, initialAuthToken).catch(async (error) => {
-                    console.error("Custom token sign-in failed. Signing in anonymously.", error);
-                    await signInAnonymously(auth);
-                });
-            } else if (auth) {
-                await signInAnonymously(auth);
-            }
-
             // Page navigation
-            document.getElementById('nav-home').addEventListener('click', () => navigateTo('landing-page'));
-            document.getElementById('landing-search-btn').addEventListener('click', () => {
+            document.getElementById('nav-home').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('landing-page');
+            });
+            
+            document.getElementById('landing-search-btn').addEventListener('click', (e) => {
+                e.preventDefault();
                 navigateTo('search-page');
                 fetchAllRecipes();
             });
-            document.getElementById('nav-favorites').addEventListener('click', () => {
+            
+            document.getElementById('landing-submit-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('submit-page');
+            });
+            
+            document.getElementById('nav-favorites').addEventListener('click', (e) => {
+                e.preventDefault();
                 navigateTo('favorites-page');
                 fetchFavoriteRecipes();
             });
-            document.getElementById('nav-submit').addEventListener('click', () => navigateTo('submit-page'));
-            document.getElementById('search-button').addEventListener('click', () => {
-                const searchTerm = document.getElementById('search-input').value.toLowerCase();
-                const recipesCollection = collection(db, `artifacts/${appId}/public/data/recipes`);
-                onSnapshot(recipesCollection, async (snapshot) => {
-                    const allRecipes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    const filteredRecipes = allRecipes.filter(recipe => recipe.name.toLowerCase().includes(searchTerm));
-                    const favorites = await getFavoriteRecipes();
-                    const recipesWithFavorites = filteredRecipes.map(recipe => ({
-                        ...recipe,
-                        isFavorite: favorites.some(fav => fav.id === recipe.id)
-                    }));
-                    renderCards('search-results', recipesWithFavorites);
-                });
+            
+            document.getElementById('nav-search').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('search-page');
+                fetchAllRecipes();
+            });
+            
+            document.getElementById('nav-submit').addEventListener('click', (e) => {
+                e.preventDefault();
+                navigateTo('submit-page');
             });
 
-            document.getElementById('favorites-search-button').addEventListener('click', () => {
+            // Search functionality
+            document.getElementById('search-button').addEventListener('click', async () => {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                if (!searchTerm) {
+                    fetchAllRecipes();
+                    return;
+                }
+                
+                showLoading('search');
+                
+                try {
+                    const recipesCollection = collection(db, 'recipes');
+                    const querySnapshot = await getDocs(recipesCollection);
+                    
+                    const allRecipes = [];
+                    querySnapshot.forEach((doc) => {
+                        allRecipes.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    const filteredRecipes = allRecipes.filter(recipe => 
+                        recipe.name.toLowerCase().includes(searchTerm) ||
+                        (recipe.tutorial && recipe.tutorial.toLowerCase().includes(searchTerm))
+                    );
+                    
+                    renderCards('search-results', filteredRecipes);
+                } catch (error) {
+                    console.error("Error searching recipes:", error);
+                    showModal("Failed to search recipes. Please try again.");
+                }
+            });
+
+            // Favorites search functionality
+            document.getElementById('favorites-search-button').addEventListener('click', async () => {
                 const searchTerm = document.getElementById('favorites-search-input').value.toLowerCase();
                 if (!userId) {
                     showModal("Please log in to search your favorites.");
                     return;
                 }
-                const favoritesCollection = collection(db, `artifacts/${appId}/users/${userId}/favorites`);
-                onSnapshot(favoritesCollection, (snapshot) => {
-                    const allFavorites = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), isFavorite: true }));
-                    const filteredFavorites = allFavorites.filter(fav => fav.name.toLowerCase().includes(searchTerm));
+                
+                showLoading('favorites');
+                
+                try {
+                    const favoritesCollection = collection(db, 'users', userId, 'favorites');
+                    const querySnapshot = await getDocs(favoritesCollection);
+                    
+                    const allFavorites = [];
+                    querySnapshot.forEach((doc) => {
+                        allFavorites.push({ id: doc.id, ...doc.data(), isFavorite: true });
+                    });
+                    
+                    const filteredFavorites = allFavorites.filter(fav => 
+                        fav.name.toLowerCase().includes(searchTerm) ||
+                        (fav.tutorial && fav.tutorial.toLowerCase().includes(searchTerm))
+                    );
+                    
                     renderCards('favorites-results', filteredFavorites, false);
-                });
+                } catch (error) {
+                    console.error("Error searching favorites:", error);
+                    showModal("Failed to search favorites. Please try again.");
+                }
+            });
+
+            // Enable search on pressing Enter
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('search-button').click();
+                }
+            });
+            
+            document.getElementById('favorites-search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('favorites-search-button').click();
+                }
             });
 
             // Initial page load

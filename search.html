@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Search Recipes - Recipe Book</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="homepage-bg">
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Search Nigerian Recipes</h1>
+        <p class="hero-subtitle">Find your next favourite meal!</p>
+        <a href="index.html" class="cta-btn">Back to Home</a>
+      </div>
+    </section>
+    <section class="search-section">
+      <input type="text" id="search-input" class="search-bar-input" placeholder="Search Nigerian meals...">
+      <button id="search-submit" class="search-bar-btn">🔍</button>
+      <div id="recipe-grid" class="recipe-grid"></div>
+    </section>
+  </div>
+  <script>
+    const recipeGrid = document.getElementById('recipe-grid');
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-submit');
+    const API_URL = 'http://localhost:5000/api/foods'; // Change if deployed
+
+    function getFavorites() {
+      const favs = localStorage.getItem('recipeFavorites');
+      return favs ? JSON.parse(favs) : [];
+    }
+    function addFavorite(recipe) {
+      const favs = getFavorites();
+      if (!favs.some(r => r.id === recipe.id)) {
+        favs.push(recipe);
+        localStorage.setItem('recipeFavorites', JSON.stringify(favs));
+      }
+    }
+    function removeFavorite(id) {
+      const favs = getFavorites().filter(r => r.id !== id);
+      localStorage.setItem('recipeFavorites', JSON.stringify(favs));
+    }
+    function isFavorited(id) {
+      return getFavorites().some(r => r.id === id);
+    }
+    function renderRecipes(recipes) {
+      recipeGrid.innerHTML = '';
+      recipes.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.innerHTML = `
+          <img src="${recipe.imageUrl}" alt="${recipe.name}" class="recipe-img" />
+          <div class="recipe-info">
+            <span>${recipe.name}</span>
+            <button class="favorite-btn">${isFavorited(recipe.id) ? '❤️' : '🤍'}</button>
+          </div>
+        `;
+        card.querySelector('.favorite-btn').onclick = () => {
+          if (isFavorited(recipe.id)) {
+            removeFavorite(recipe.id);
+          } else {
+            addFavorite(recipe);
+          }
+          renderRecipes(recipes);
+        };
+        recipeGrid.appendChild(card);
+      });
+    }
+    async function fetchRecipes(query) {
+      let url = API_URL;
+      if (query && query.trim()) {
+        url += `?search=${encodeURIComponent(query.trim())}`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
+      renderRecipes(data);
+    }
+    searchBtn.onclick = () => {
+      fetchRecipes(searchInput.value);
+    };
+    window.onload = () => {
+      fetchRecipes('');
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Favourites - Recipe Book</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="homepage-bg">
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Your Favourite Nigerian Meals</h1>
+        <p class="hero-subtitle">All your saved recipes in one place.</p>
+        <a href="index.html" class="cta-btn">Back to Home</a>
+      </div>
+    </section>
+    <section class="search-section">
+      <div id="favourites-grid" class="recipe-grid"></div>
+    </section>
+  </div>
+  <script>
+    // Simple JS for displaying favourites
+    function getFavorites() {
+      const favs = localStorage.getItem('recipeFavorites');
+      return favs ? JSON.parse(favs) : [];
+    }
+    function removeFavorite(id) {
+      const favs = getFavorites().filter(r => r.id !== id);
+      localStorage.setItem('recipeFavorites', JSON.stringify(favs));
+      renderFavourites();
+    }
+    function renderFavourites() {
+      const favs = getFavorites();
+      const grid = document.getElementById('favourites-grid');
+      grid.innerHTML = '';
+      if (favs.length === 0) {
+        grid.innerHTML = '<p>No favourites yet.</p>';
+        return;
+      }
+      favs.forEach(recipe => {
+        const card = document.createElement('div');
+        card.className = 'recipe-card';
+        card.innerHTML = `
+          <img src="${recipe.imageUrl}" alt="${recipe.name}" class="recipe-img" />
+          <div class="recipe-info">
+            <span>${recipe.name}</span>
+            <button class="favorite-btn">❤️</button>
+          </div>
+        `;
+        card.querySelector('.favorite-btn').onclick = () => {
+          removeFavorite(recipe.id);
+        };
+        grid.appendChild(card);
+      });
+    }
+    window.onload = renderFavourites;
+  </script>
+</body>
+</html>
