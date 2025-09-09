@@ -632,7 +632,6 @@
         </div>
     </footer>
 
-<<<<<<< HEAD
     <script>
         // Sample recipe data
         const sampleRecipes = [
@@ -667,78 +666,6 @@
                 time: 20,
                 servings: 2,
                 instructions: "Preheat grill to medium-high. Season salmon with salt, pepper, and olive oil. Grill for 4-5 minutes on each side. Squeeze fresh lemon juice over before serving."
-=======
-    <!-- Firebase Configuration -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-analytics.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, addDoc, setDoc, deleteDoc, collection, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "your-api-key",
-            authDomain: "food-recipe-3aa3d.firebaseapp.com",
-            projectId: "food-recipe-3aa3d",
-            storageBucket: "food-recipe-3aa3d.firebasestorage.app",
-            messagingSenderId: "917057458097",
-            appId: "1:917057458097:web:0339f12b575a85309a3790",
-            measurementId: "G-ZZS7C705LC"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // App constants
-        const appId = "naija-kitchen-app";
-        let userId = null;
-
-        // Display modal message
-        function showModal(message) {
-            document.getElementById('modal-message').textContent = message;
-            document.getElementById('confirmation-modal').classList.remove('hidden');
-        }
-
-        // Hide modal
-        document.getElementById('modal-ok-btn').addEventListener('click', () => {
-            document.getElementById('confirmation-modal').classList.add('hidden');
-        });
-
-        // Function to navigate between pages
-        function navigateTo(pageId) {
-            document.querySelectorAll('.page-section').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        // Show loading spinner
-        function showLoading(containerId) {
-            document.getElementById(`loading-spinner-${containerId}`).style.display = 'block';
-        }
-
-        // Hide loading spinner
-        function hideLoading(containerId) {
-            document.getElementById(`loading-spinner-${containerId}`).style.display = 'none';
-        }
-
-        // Card rendering function
-        function renderCards(containerId, recipes, showFavoriteIcon = true) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = ''; // Clear existing cards
-            
-            if (recipes.length === 0) {
-                const messageContainer = document.getElementById(containerId === 'search-results' ? 'search-message' : 'favorites-message');
-                messageContainer.classList.remove('hidden');
-            } else {
-                const messageContainer = document.getElementById(containerId === 'search-results' ? 'search-message' : 'favorites-message');
-                messageContainer.classList.add('hidden');
->>>>>>> 2baf2f43e35cae6dbd2096f25eacedc72e0f02a3
             }
         ];
 
