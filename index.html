@@ -1,892 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipe Book</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Global Styles */
-        :root {
-            --primary: #e67e22;
-            --secondary: #2ecc71;
-            --accent: #e74c3c;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --gray: #95a5a6;
-            --white: #ffffff;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        /* Header Styles */
-        header {
-            background-color: var(--white);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 0;
-        }
-        
-        .logo {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--primary);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo i {
-            margin-right: 0.5rem;
-        }
-        
-        /* Navigation */
-        nav ul {
-            display: flex;
-            list-style: none;
-        }
-        
-        nav li {
-            margin-left: 1.5rem;
-        }
-        
-        nav a {
-            text-decoration: none;
-            color: var(--dark);
-            font-weight: 500;
-            transition: color 0.3s;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-        }
-        
-        nav a:hover, nav a.active {
-            color: var(--primary);
-            background-color: rgba(230, 126, 34, 0.1);
-        }
-        
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, rgba(230, 126, 34, 0.9), rgba(231, 76, 60, 0.8)), url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            padding: 4rem 0;
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-        
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-        }
-        
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-        }
-        
-        .btn {
-            display: inline-block;
-            padding: 0.8rem 1.8rem;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
-            border-radius: 30px;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-        }
-        
-        .btn:hover {
-            background-color: #d35400;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-        }
-        
-        .btn-secondary:hover {
-            background-color: #27ae60;
-        }
-        
-        /* Search Section */
-        .search-section {
-            margin-bottom: 3rem;
-        }
-        
-        .search-container {
-            display: flex;
-            max-width: 600px;
-            margin: 0 auto;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 50px;
-            overflow: hidden;
-        }
-        
-        .search-input {
-            flex: 1;
-            padding: 1rem 1.5rem;
-            border: none;
-            font-size: 1rem;
-            outline: none;
-        }
-        
-        .search-btn {
-            padding: 1rem 1.5rem;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .search-btn:hover {
-            background-color: #d35400;
-        }
-        
-        /* Recipe Grid */
-        .section-title {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--dark);
-            position: relative;
-        }
-        
-        .section-title:after {
-            content: '';
-            display: block;
-            width: 50px;
-            height: 3px;
-            background: var(--primary);
-            margin: 0.5rem auto;
-        }
-        
-        .recipe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-        
-        .recipe-card {
-            background-color: var(--white);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .recipe-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .recipe-img {
-            height: 200px;
-            width: 100%;
-            object-fit: cover;
-        }
-        
-        .recipe-content {
-            padding: 1.5rem;
-        }
-        
-        .recipe-title {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-        }
-        
-        .recipe-meta {
-            display: flex;
-            justify-content: space-between;
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        
-        .recipe-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .favorite-btn {
-            background: none;
-            border: none;
-            color: var(--gray);
-            cursor: pointer;
-            font-size: 1.2rem;
-            transition: color 0.3s;
-        }
-        
-        .favorite-btn.active {
-            color: var(--accent);
-        }
-        
-        .favorite-btn:hover {
-            color: var(--accent);
-        }
-        
-        /* Form Styles */
-        .form-section {
-            background-color: var(--white);
-            padding: 3rem;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 3rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        
-        .form-title {
-            text-align: center;
-            margin-bottom: 2rem;
-            color: var(--dark);
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--dark);
-        }
-        
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 0.8rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .form-textarea {
-            min-height: 150px;
-            resize: vertical;
-        }
-        
-        .error-message {
-            color: var(--accent);
-            font-size: 0.9rem;
-            margin-top: 0.3rem;
-            display: none;
-        }
-        
-        /* Favorites Page */
-        .favorites-container {
-            min-height: 400px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: var(--gray);
-        }
-        
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            color: #ddd;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: var(--dark);
-            color: white;
-            padding: 3rem 0;
-            margin-top: 3rem;
-        }
-        
-        .footer-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-section h3 {
-            margin-bottom: 1rem;
-            position: relative;
-        }
-        
-        .footer-section h3:after {
-            content: '';
-            display: block;
-            width: 30px;
-            height: 2px;
-            background: var(--primary);
-            margin-top: 0.5rem;
-        }
-        
-        .footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 0.5rem;
-        }
-        
-        .footer-links a {
-            color: #ddd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-links a:hover {
-            color: var(--primary);
-        }
-        
-        .social-icons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .social-icons a {
-            color: white;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s;
-        }
-        
-        .social-icons a:hover {
-            background: var(--primary);
-        }
-        
-        .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #aaa;
-            font-size: 0.9rem;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            nav ul {
-                margin-top: 1rem;
-                justify-content: center;
-            }
-            
-            nav li {
-                margin: 0 0.5rem;
-            }
-            
-            .hero h1 {
-                font-size: 2.2rem;
-            }
-            
-            .hero p {
-                font-size: 1rem;
-            }
-            
-            .recipe-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-            
-            .form-section {
-                padding: 2rem;
-            }
-        }
-        
-        /* Utility Classes */
-        .hidden {
-            display: none;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .mt-3 {
-            margin-top: 3rem;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodRecipe - Recipe Project</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./CSS/style.css">
 </head>
-<body>
-    <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo" onclick="showPage('home')">
-                    <i class="fas fa-utensils"></i>Recipe Book
-                </a>
-                <nav>
-                    <ul>
-                        <li><a href="#" class="active" onclick="showPage('home')">Home</a></li>
-                        <li><a href="#" onclick="showPage('search')">Search</a></li>
-                        <li><a href="#" onclick="showPage('favorites')">Favorites</a></li>
-                        <li><a href="#" onclick="showPage('submit')">Submit Recipe</a></li>
-                    </ul>
-                </nav>
-            </div>
+
+<body class="min-h-screen">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-white shadow-sm z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <a href="#" class="text-2xl font-bold text-[#FF7F50]" id="food-recipe-link">FoodRecipe</a>
+      </div>
+      <div class="hidden md:flex space-x-8">
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition" id="home-link">Home</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition" id="search-link">Search</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition" id="favorites-link">Favorites</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition" id="submit-recipe-link">Submit Recipe</a>
+      </div>
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer">
+          <i class="fas fa-cutlery text-gray-600"></i>
         </div>
-    </header>
+        <button class="md:hidden ml-4 text-gray-700" id="mobile-menu-button">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile menu -->
+    <div class="md:hidden bg-white shadow-lg hidden" id="mobile-menu">
+      <div class="px-4 py-2 flex flex-col space-y-3">
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition py-2" id="mobile-home-link">Home</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition py-2" id="mobile-search-link">Search</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition py-2" id="mobile-favorites-link">Favorites</a>
+        <a href="#" class="text-gray-700 hover:text-[#FF7F50] transition py-2" id="mobile-submit-recipe-link">Submit
+          Recipe</a>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Main Content -->
-    <main>
-        <!-- Home Page -->
-        <section id="home-page" class="page">
-            <div class="hero">
-                <div class="container">
-                    <div class="hero-content">
-                        <h1>Discover Delicious Recipes</h1>
-                        <p>Find, save, and share your favorite recipes from around the world</p>
-                        <a href="#" class="btn" onclick="showPage('search')">Search Recipes</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-                <h2 class="section-title">Popular Recipes</h2>
-                <div class="recipe-grid" id="popular-recipes">
-                    <!-- Popular recipes will be loaded here -->
-                </div>
-                
-                <div class="text-center mt-3">
-                    <a href="#" class="btn btn-secondary" onclick="showPage('search')">View All Recipes</a>
-                </div>
-            </div>
-        </section>
-
-        <!-- Search Page -->
-        <section id="search-page" class="page hidden">
-            <div class="container">
-                <h2 class="section-title">Search Recipes</h2>
-                
-                <div class="search-section">
-                    <div class="search-container">
-                        <input type="text" class="search-input" id="search-input" placeholder="Search for recipes...">
-                        <button class="search-btn" onclick="searchRecipes()">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="recipe-grid" id="search-results">
-                    <!-- Search results will be loaded here -->
-                </div>
-                
-                <div id="search-message" class="empty-state hidden">
-                    <i class="fas fa-search"></i>
-                    <h3>No recipes found</h3>
-                    <p>Try a different search term or browse our popular recipes</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Favorites Page -->
-        <section id="favorites-page" class="page hidden">
-            <div class="container">
-                <h2 class="section-title">Your Favorite Recipes</h2>
-                
-                <div class="favorites-container">
-                    <div class="recipe-grid" id="favorites-results">
-                        <!-- Favorite recipes will be loaded here -->
-                    </div>
-                    
-                    <div id="favorites-empty" class="empty-state">
-                        <i class="fas fa-heart"></i>
-                        <h3>No favorites yet</h3>
-                        <p>Start adding recipes to your favorites to see them here</p>
-                        <a href="#" class="btn mt-3" onclick="showPage('search')">Browse Recipes</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Submit Recipe Page -->
-        <section id="submit-page" class="page hidden">
-            <div class="container">
-                <h2 class="section-title">Submit Your Recipe</h2>
-                
-                <div class="form-section">
-                    <form id="recipe-form">
-                        <div class="form-group">
-                            <label for="recipe-name" class="form-label">Recipe Name</label>
-                            <input type="text" id="recipe-name" class="form-input" required>
-                            <div class="error-message" id="name-error">Please enter a recipe name</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="recipe-image" class="form-label">Image URL</label>
-                            <input type="url" id="recipe-image" class="form-input" required>
-                            <div class="error-message" id="image-error">Please enter a valid image URL</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="recipe-time" class="form-label">Cooking Time (minutes)</label>
-                            <input type="number" id="recipe-time" class="form-input" min="1" required>
-                            <div class="error-message" id="time-error">Please enter a valid cooking time</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="recipe-servings" class="form-label">Servings</label>
-                            <input type="number" id="recipe-servings" class="form-input" min="1" required>
-                            <div class="error-message" id="servings-error">Please enter the number of servings</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="recipe-instructions" class="form-label">Instructions</label>
-                            <textarea id="recipe-instructions" class="form-textarea" required></textarea>
-                            <div class="error-message" id="instructions-error">Please enter cooking instructions</div>
-                        </div>
-                        
-                        <button type="submit" class="btn">Submit Recipe</button>
-                    </form>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Recipe Book</h3>
-                    <p>Discover and share delicious recipes from around the world.</p>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Quick Links</h3>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="showPage('home')">Home</a></li>
-                        <li><a href="#" onclick="showPage('search')">Search Recipes</a></li>
-                        <li><a href="#" onclick="showPage('favorites')">Favorites</a></li>
-                        <li><a href="#" onclick="showPage('submit')">Submit Recipe</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Connect With Us</h3>
-                    <p>Follow us on social media for daily recipe inspiration.</p>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-pinterest"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                <p>&copy; 2023 Recipe Book. All rights reserved.</p>
-            </div>
+  <!-- Main Content -->
+  <main class="pt-5">
+    <!-- Homepage -->
+    <section id="homepage" class="home-section relative h-screen flex items-center justify-center">
+      <div class="hero-overlay absolute inset-0"></div>
+      <div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">Discover Your Next Favorite Meal</h1>
+        <div class="search-bar bg-white rounded-full p-1 shadow-lg mx-auto max-w-2xl">
+          <div class="flex items-center">
+            <input type="text" placeholder="Search for recipes..."
+              class="flex-grow px-6 py-4 rounded-full focus:outline-none text-gray-700" id="hero-search-input">
+            <button class="bg-[#FF7F50] text-white rounded-full px-6 py-4 font-medium hover:bg-[#e67347] transition"
+              id="hero-search-btn">
+              Search Recipes
+            </button>
+          </div>
         </div>
-    </footer>
+      </div>
+    </section>
 
-    <script>
-        // Sample recipe data
-        const sampleRecipes = [
-            {
-                id: 1,
-                name: "Classic Spaghetti Carbonara",
-                image: "https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                time: 25,
-                servings: 4,
-                instructions: "Cook pasta according to package instructions. In a separate pan, cook pancetta until crispy. Whisk eggs and cheese together. Combine everything while pasta is still hot, stirring continuously to create a creamy sauce."
-            },
-            {
-                id: 2,
-                name: "Vegetable Stir Fry",
-                image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                time: 20,
-                servings: 2,
-                instructions: "Heat oil in a wok or large pan. Add garlic and ginger, stir for 30 seconds. Add vegetables and stir fry for 3-4 minutes. Add sauce and cook for another 2 minutes. Serve with rice or noodles."
-            },
-            {
-                id: 3,
-                name: "Chocolate Chip Cookies",
-                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                time: 30,
-                servings: 24,
-                instructions: "Preheat oven to 350°F. Cream together butter and sugars. Beat in eggs and vanilla. Combine flour, baking soda, and salt gradually. Stir in chocolate chips. Drop onto ungreased baking sheets. Bake for 10-12 minutes."
-            },
-            {
-                id: 4,
-                name: "Grilled Salmon with Lemon",
-                image: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
-                time: 20,
-                servings: 2,
-                instructions: "Preheat grill to medium-high. Season salmon with salt, pepper, and olive oil. Grill for 4-5 minutes on each side. Squeeze fresh lemon juice over before serving."
-            }
-        ];
+    <!-- Search Page -->
+    <section id="search-page" class="hidden py-12">
+      <div class="container mx-auto px-4">
+        <div class="sticky top-16 bg-white py-4 z-40 shadow-md rounded-lg">
+          <div class="flex items-center max-w-3xl mx-auto">
+            <input type="text" placeholder="Search for recipes..." id="search-input"
+              class="flex-grow px-6 py-3 rounded-l-full border border-gray-300 focus:outline-none  focus:border-[#FF7F50] ">
+            <button
+              class="bg-[#FF7F50] h-[50px] flex items-center text-white px-6 rounded-r-full hover:bg-[#e67347] transition"
+              id="search-btn">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
 
-        // Initialize favorites array
-        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        <div id="search-results" class="mt-8">
+          <!-- Recipes will be loaded here -->
+        </div>
 
-        // DOM Elements
-        const pages = document.querySelectorAll('.page');
-        
-        // Show specific page and hide others
-        function showPage(pageId) {
-            pages.forEach(page => {
-                page.classList.add('hidden');
-            });
-            
-            document.getElementById(`${pageId}-page`).classList.remove('hidden');
-            
-            // Update navigation active state
-            document.querySelectorAll('nav a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Set the active navigation link
-            const activeNav = Array.from(document.querySelectorAll('nav a')).find(link => 
-                link.getAttribute('onclick')?.includes(pageId)
-            );
-            
-            if (activeNav) {
-                activeNav.classList.add('active');
-            }
-            
-            // Load appropriate content
-            if (pageId === 'home') {
-                loadPopularRecipes();
-            } else if (pageId === 'favorites') {
-                loadFavorites();
-            }
-        }
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center mt-8 space-x-2 hidden">
+          <button id="prev-page"
+            class="pagination-btn bg-gray-200 text-gray-700 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div id="page-numbers" class="flex space-x-2"></div>
+          <button id="next-page"
+            class="pagination-btn bg-gray-200 text-gray-700 px-4 py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </section>
 
-        // Load popular recipes on home page
-        function loadPopularRecipes() {
-            const popularRecipesContainer = document.getElementById('popular-recipes');
-            popularRecipesContainer.innerHTML = '';
-            
-            sampleRecipes.forEach(recipe => {
-                const isFavorite = favorites.some(fav => fav.id === recipe.id);
-                popularRecipesContainer.innerHTML += createRecipeCard(recipe, isFavorite);
-            });
-            
-            // Add event listeners to favorite buttons
-            addFavoriteEventListeners();
-        }
+    <!-- Favorites Page -->
+    <section id="favorites-page" class="hidden py-12">
+      <div class="container mx-auto px-4">
+        <h2 class="text-3xl font-bold mb-8 text-center">Your Favorite Recipes</h2>
+        <div id="favorites-results">
+          <!-- Favorites will be loaded here -->
+        </div>
+        <div id="no-favorites" class="text-center py-12">
+          <i class="fas fa-heart text-5xl text-gray-300 mb-4"></i>
+          <h3 class="text-xl text-gray-500">Your recipe book is empty. Start exploring!</h3>
+          <button class="mt-4 bg-[#FF7F50] text-white px-6 py-3 rounded-full hover:bg-[#e67347] transition"
+            id="explore-btn">
+            Explore Recipes
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
 
-        // Search recipes
-        function searchRecipes() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            const searchResultsContainer = document.getElementById('search-results');
-            const searchMessage = document.getElementById('search-message');
-            
-            if (!searchTerm) {
-                alert('Please enter a search term');
-                return;
-            }
-            
-            searchResultsContainer.innerHTML = '';
-            
-            const filteredRecipes = sampleRecipes.filter(recipe => 
-                recipe.name.toLowerCase().includes(searchTerm) ||
-                recipe.instructions.toLowerCase().includes(searchTerm)
-            );
-            
-            if (filteredRecipes.length === 0) {
-                searchMessage.classList.remove('hidden');
-            } else {
-                searchMessage.classList.add('hidden');
-                filteredRecipes.forEach(recipe => {
-                    const isFavorite = favorites.some(fav => fav.id === recipe.id);
-                    searchResultsContainer.innerHTML += createRecipeCard(recipe, isFavorite);
-                });
-                
-                // Add event listeners to favorite buttons
-                addFavoriteEventListeners();
-            }
-        }
+  <!-- Recipe Detail Modal -->
+  <div id="recipe-detail-modal"
+    class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 overflow-hidden">
+      <div class="flex justify-between items-center bg-[#FF7F50] text-white px-6 py-4">
+        <h3 class="text-xl font-bold" id="recipe-modal-title">Recipe Details</h3>
+        <button id="close-recipe-modal" class="text-white hover:text-gray-200">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="recipe-modal-content p-6">
+        <div id="recipe-detail-content"></div>
+      </div>
+    </div>
+  </div>
 
-        // Load favorite recipes
-        function loadFavorites() {
-            const favoritesContainer = document.getElementById('favorites-results');
-            const favoritesEmpty = document.getElementById('favorites-empty');
-            
-            favoritesContainer.innerHTML = '';
-            
-            if (favorites.length === 0) {
-                favoritesEmpty.classList.remove('hidden');
-            } else {
-                favoritesEmpty.classList.add('hidden');
-                favorites.forEach(recipe => {
-                    favoritesContainer.innerHTML += createRecipeCard(recipe, true);
-                });
-                
-                // Add event listeners to favorite buttons
-                addFavoriteEventListeners();
-            }
-        }
+  <!-- Submit Recipe Modal -->
+  <div id="submit-recipe-modal" class="modal fixed inset-0 bg-black bg-opacity-50 flex py-3 justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-fit overflow-y-auto">
+      <div class="flex justify-between items-center bg-[#FF7F50] text-white px-6 py-4">
+        <h3 class="text-xl font-bold">Submit Your Recipe</h3>
+        <button id="close-modal" class="text-white hover:text-gray-200">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="recipe-form" class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="recipe-name" class="block text-gray-700 mb-2">Recipe Name *</label>
+            <input type="text" id="recipe-name"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+              required>
+            <div class="text-red-500 text-sm mt-1 hidden">This field is required</div>
+          </div>
+          <div>
+            <label for="image-url" class="block text-gray-700 mb-2">Image URL *</label>
+            <input type="url" id="image-url"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+              required>
+            <div class="text-red-500 text-sm mt-1 hidden">This field is required</div>
+          </div>
+        </div>
 
-        // Create recipe card HTML
-        function createRecipeCard(recipe, isFavorite) {
-            return `
-                <div class="recipe-card" data-id="${recipe.id}">
-                    <img src="${recipe.image}" alt="${recipe.name}" class="recipe-img">
-                    <div class="recipe-content">
-                        <h3 class="recipe-title">${recipe.name}</h3>
-                        <div class="recipe-meta">
-                            <span><i class="fas fa-clock"></i> ${recipe.time} min</span>
-                            <span><i class="fas fa-users"></i> ${recipe.servings} servings</span>
-                        </div>
-                        <div class="recipe-actions">
-                            <button class="favorite-btn ${isFavorite ? 'active' : ''}">
-                                <i class="fas fa-heart"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <label for="category" class="block text-gray-700 mb-2">Category *</label>
+            <select id="category"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+              required>
+              <option value="">Select a category</option>
+              <option value="Main Course">Main Course</option>
+              <option value="Side">Side</option>
+              <option value="Snack">Snack</option>
+              <option value="Soup">Soup</option>
+              <option value="Swallow">Swallow</option>
+            </select>
+            <div class="text-red-500 text-sm mt-1 hidden">This field is required</div>
+          </div>
+          <div>
+            <label for="area" class="block text-gray-700 mb-2">Cuisine/Area *</label>
+            <input type="text" id="area"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+              placeholder="e.g., American, Nigerian" required>
+            <div class="text-red-500 text-sm mt-1 hidden">This field is required</div>
+          </div>
+        </div>
 
-        // Add event listeners to favorite buttons
-        function addFavoriteEventListeners() {
-            document.querySelectorAll('.favorite-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    const recipeCard = this.closest('.recipe-card');
-                    const recipeId = parseInt(recipeCard.dataset.id);
-                    const recipe = sampleRecipes.find(r => r.id === recipeId);
-                    
-                    if (this.classList.contains('active')) {
-                        // Remove from favorites
-                        favorites = favorites.filter(fav => fav.id !== recipeId);
-                        this.classList.remove('active');
-                    } else {
-                        // Add to favorites
-                        favorites.push(recipe);
-                        this.classList.add('active');
-                    }
-                    
-                    // Save to localStorage
-                    localStorage.setItem('favorites', JSON.stringify(favorites));
-                    
-                    // If we're on the favorites page, update the view
-                    if (!document.getElementById('favorites-page').classList.contains('hidden')) {
-                        loadFavorites();
-                    }
-                });
-            });
-        }
+        <div class="mb-4">
+          <label for="tags" class="block text-gray-700 mb-2">Tags (comma separated)</label>
+          <input type="text" id="tags"
+            class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50]"
+            placeholder="e.g., Swallow, Traditional">
+        </div>
 
-        // Handle recipe form submission
-        document.getElementById('recipe-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Basic validation
-            let isValid = true;
-            
-            const name = document.getElementById('recipe-name');
-            const image = document.getElementById('recipe-image');
-            const time = document.getElementById('recipe-time');
-            const servings = document.getElementById('recipe-servings');
-            const instructions = document.getElementById('recipe-instructions');
-            
-            // Reset error messages
-            document.querySelectorAll('.error-message').forEach(msg => {
-                msg.style.display = 'none';
-            });
-            
-            // Validate name
-            if (!name.value.trim()) {
-                document.getElementById('name-error').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate image URL
-            if (!image.value.trim()) {
-                document.getElementById('image-error').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate time
-            if (!time.value || time.value < 1) {
-                document.getElementById('time-error').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate servings
-            if (!servings.value || servings.value < 1) {
-                document.getElementById('servings-error').style.display = 'block';
-                isValid = false;
-            }
-            
-            // Validate instructions
-            if (!instructions.value.trim()) {
-                document.getElementById('instructions-error').style.display = 'block';
-                isValid = false;
-            }
-            
-            if (isValid) {
-                // In a real app, you would save the recipe to a database
-                alert('Recipe submitted successfully!');
-                this.reset();
-            }
-        });
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Ingredients *</label>
+          <div id="ingredients-container">
+            <div class="ingredient-row flex flex-col md:flex-row gap-2 mb-2">
+              <input type="text"
+                class="ingredient-measure flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50]"
+                placeholder="Measure (e.g., 1 cup)">
+              <input type="text"
+                class="ingredient-name flex-2 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+                placeholder="Ingredient name" required>
+              <button type="button" class="remove-ingredient bg-red-500 text-white px-3 rounded hover:bg-red-600"
+                style="display: none;">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-red-500 text-sm mt-1 hidden" id="ingredients-error">At least one ingredient is required</div>
+          <button type="button" id="add-ingredient" class="mt-2 text-[#FF7F50] hover:text-[#e67347]">
+            <i class="fas fa-plus mr-1"></i> Add Another Ingredient
+          </button>
+        </div>
 
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            loadPopularRecipes();
-            
-            // Add event listener to search input for Enter key
-            document.getElementById('search-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchRecipes();
-                }
-            });
-        });
-    </script>
+        <div class="mb-4">
+          <label class="block text-gray-700 mb-2">Instructions *</label>
+          <div id="instructions-container">
+            <div class="instruction-row flex gap-2 mb-2">
+              <span
+                class="bg-[#FF7F50] text-white rounded-full w-6 h-6 flex items-center justify-center mt-2 flex-shrink-0">1</span>
+              <textarea
+                class="instruction-step w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-[#FF7F50] form-input"
+                rows="2" placeholder="Instruction step" required></textarea>
+              <button type="button"
+                class="remove-instruction bg-red-500 text-white px-3 rounded hover:bg-red-600 self-start mt-2"
+                style="display: none;">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="text-red-500 text-sm mt-1 hidden" id="instructions-error">At least one instruction is required
+          </div>
+          <button type="button" id="add-instruction" class="mt-2 text-[#FF7F50] hover:text-[#e67347]">
+            <i class="fas fa-plus mr-1"></i> Add Another Step
+          </button>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" id="cancel-form"
+            class="px-4 py-2 text-gray-700 mr-2 rounded hover:bg-gray-100">Cancel</button>
+          <button type="submit"
+            class="bg-[#FF7F50] text-white px-6 py-2 rounded hover:bg-[#e67347] transition">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Message -->
+  <div id="success-message"
+    class="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden z-50">
+    <div class="flex items-center">
+      <i class="fas fa-check-circle mr-2"></i>
+      <span>Recipe submitted successfully!</span>
+    </div>
+  </div>
+
+  <script type="module" src="./JS/main.js"></script>
 </body>
+
 </html>
